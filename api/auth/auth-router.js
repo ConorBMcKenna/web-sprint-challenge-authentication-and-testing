@@ -1,7 +1,24 @@
-const router = require('express').Router();
+const router = require("express").Router();
+const { create, getByUsername } = require("./userModel");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
-router.post('/register', (req, res) => {
-  res.end('implement register, please!');
+router.post("/register", async (req, res) => {
+  if(!req.body.username || !req.body.password){
+    return res.status(400).json({message : "username and password required"})
+  }
+  const user = await getByUsername(req.body.username);
+  console.log(user);
+  if (user.length === 0) {
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(req.body.password, salt);
+    const newUser = await create({username : req.body.username, password : hash});
+
+    res.json(newUser);
+  }else{
+    res.status(400).json({message : "username taken"})
+  }
+
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -29,8 +46,22 @@ router.post('/register', (req, res) => {
   */
 });
 
-router.post('/login', (req, res) => {
-  res.end('implement login, please!');
+router.post("/login", async (req, res) => {
+  if(!req.body.username || !req.body.password){
+    return res.status(400).json({message : "username and password required"})
+  }
+  const noUser = await getByUsername(req.body.username)
+  if (noUser.length === 1) {
+   const isValid = bcrypt.compareSync(req.body.password, noUser[0].password )
+   if(isValid){
+    const token = jwt.sign({ id: noUser[0].id }, 'shhhhh');
+    res.status(201).json({message : `Welcome, ${noUser[0].username}`, token : token} )
+
+   } else {
+    res.status(400).json({message : "invalid credentials"})
+   }
+  }
+  
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
