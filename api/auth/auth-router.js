@@ -54,7 +54,7 @@ router.post("/login", async (req, res) => {
   if (noUser.length === 1) {
    const isValid = bcrypt.compareSync(req.body.password, noUser[0].password )
    if(isValid){
-    const token = jwt.sign({ id: noUser[0].id }, 'shhhhh');
+    const token = jwt.sign({ id: noUser[0].id }, process.env.SECRET || "shhhhh");
     res.status(201).json({message : `Welcome, ${noUser[0].username}`, token : token} )
 
    } else {

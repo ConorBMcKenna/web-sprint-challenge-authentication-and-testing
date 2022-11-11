@@ -1,5 +1,21 @@
+const jwt = require("jsonwebtoken");
+
 module.exports = (req, res, next) => {
-  next();
+  console.log(req.headers)
+  if(!req.headers.authorization){
+    res.status(403).json({message:"token required"})
+  }else{
+    const token = req.headers.authorization.split(" ")[1];
+    jwt.verify(token, process.env.SECRET || "shhhhh", function(err, decoded) {
+       if(err){
+        res.status(403).json({message:"token invalid"})
+       }else{
+        next();
+       }
+    });
+  }
+
+  
   /*
     IMPLEMENT
 
@@ -12,3 +28,4 @@ module.exports = (req, res, next) => {
       the response body should include a string exactly as follows: "token invalid".
   */
 };
+
