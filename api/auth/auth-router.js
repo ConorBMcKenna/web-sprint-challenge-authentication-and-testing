@@ -60,6 +60,8 @@ router.post("/login", async (req, res) => {
    } else {
     res.status(403).json({message :"invalid credentials"})
    }
+  } else {
+    res.status(403).json({message :"invalid credentials"})
   }
   
   /*

@@ -48,7 +48,7 @@ describe("/api/jokes",  ()=>{
   test('If a token is Valid you should get Dad Jokes', async ()=>{
    await request(server).post('/api/auth/register').send(userA)
   const loginRes = await request(server).post('/api/auth/login').send(userA)
-  const res = await request(server).get('/api/jokes').set("Authorization", `Bearer ${loginRes.body.token}`)
+  const res = await request(server).get('/api/jokes').set("Authorization", `${loginRes.body.token}`)
     expect(res.body.length).toBe(3)
   })
 })
